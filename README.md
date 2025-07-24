@@ -195,7 +195,7 @@ Exception handling is implemented throughout the application to ensure robust er
 
 1. **Clone the repository:**
     ```bash
-    git clone <your-repo-url>
+    git clone https://github.com/Agasteesh/DOORDARSHAN.git
     cd doordarshan
     ```
 2. **Create and activate a virtual environment:**

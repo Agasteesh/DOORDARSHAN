@@ -87,7 +87,7 @@ poetry.lock
 
 # dotenv
 .env
-.env.*
+.env.local
 
 # mypy
 .mypy_cache/

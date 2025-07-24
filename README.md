@@ -112,6 +112,7 @@ ott_platform/
 │       └── email/
 │           ├── reset_password.html     # Password reset email template (HTML)
 │           └── reset_password.txt      # Password reset email template (plain text)
+├── demo/                               # Screenshots & Diagrams
 ├── config.py                           # App configuration (dev, prod, etc.)
 ├── requirements.txt                    # Python dependencies
 ├── run.py                              # App entry point

@@ -1,0 +1,51 @@
+{#
+Shared Jinja2 macros for rendering form fields and table rows.
+#}
+{% macro render_field(field, style=None, placeholder=None) %}
+  {%- if field.type == 'SubmitField' -%}
+    {{ field(class_="btn btn-primary") }}
+  {%- elif style == 'doordarshan' -%}
+    <div class="form-group doordarshan-form-group">
+      {{ field(class_="doordarshan-login-input", placeholder=placeholder or field.label.text) }}
+      {% for error in field.errors %}
+        <span class="text-danger animated-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+  {%- else -%}
+    <div class="form-group floating-label-group">
+      {{ field(class_="form-control") }}
+      {{ field.label(class_="floating-label") }}
+      {% for error in field.errors %}
+        <span class="text-danger animated-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+  {%- endif -%}
+{% endmacro %}
+
+{% macro render_video_row(video, showEditVideoForm=False) %}
+  <tr>
+    <td>{{ video.id }}</td>
+    <td>{{ video.title }}</td>
+    <td>{{ video.description }}</td>
+    <td>
+      {% if video.thumbnail_url %}
+        <div style="width:80px; aspect-ratio:16/9; background:#222; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+          <img src="{{ video.thumbnail_url }}" alt="Thumbnail" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+      {% else %}N/A{% endif %}
+    </td>
+    <td>{{ video.uploader.username if video.uploader else 'N/A' }}</td>
+    <td>{{ video.upload_date.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td>{% for genre in video.genres %}{{ genre.name }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+    <td>
+      {% if showEditVideoForm %}
+        <button type="button" class="btn btn-sm btn-info" onclick="showEditVideoForm('{{ video.id }}')">Edit</button>
+      {% else %}
+        <a href="{{ url_for('admin.edit_video', video_id=video.id) }}" class="btn btn-sm btn-info">Edit</a>
+      {% endif %}
+      <form action="{{ url_for('admin.delete_video', video_id=video.id) }}" method="POST" style="display:inline;">
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete video: {{ video.title }}?');">Delete</button>
+      </form>
+    </td>
+  </tr>
+{% endmacro %}

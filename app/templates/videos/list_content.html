@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Videos{% endblock %}
+
+{% block content %}
+<div class="browse-container doordarshan-ui">
+    <h2 class="browse-title">Available Videos</h2>
+    <form method="get" class="browse-filter-form doordarshan-filter-form">
+        <div class="filter-row">
+            <label for="categories">Categories:</label>
+            <select name="genre" id="categories" onchange="this.form.submit()" class="doordarshan-select">
+                <option value="">All Categories</option>
+                {% for genre in genres %}
+                    <option value="{{ genre.id }}" {% if genre.id == selected_genre_id %}selected{% endif %}>{{ genre.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+    {% for genre in genres %}
+        {% set videos_to_show = genre_videos[genre] %}
+        {% if (not selected_genre_id and videos_to_show) or (selected_genre_id and genre.id == selected_genre_id) %}
+            <h3 class="genre-title doordarshan-genre-title">{{ genre.name }}</h3>
+            <div class="doordarshan-row">
+                {% if videos_to_show %}
+                    {% for video in videos_to_show %}
+                    <div class="doordarshan-card">
+                        <a href="{{ url_for('videos.video_detail', video_id=video.id) }}" class="doordarshan-card-link">
+                            <div class="doordarshan-card-img-container">
+                                {% if video.thumbnail_url %}
+                                    <img src="{{ video.thumbnail_url }}" alt="{{ video.title }} thumbnail" class="doordarshan-card-img">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='images/default_thumbnail.jpg') }}" alt="Default thumbnail" class="doordarshan-card-img">
+                                {% endif %}
+                                <div class="doordarshan-card-overlay">
+                                    <span class="doordarshan-play-icon">▶</span>
+                                </div>
+                            </div>
+                            <div class="doordarshan-card-title">{{ video.title }}</div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-videos">No videos in this category.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

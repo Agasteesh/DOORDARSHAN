@@ -1,0 +1,54 @@
+<div class="edit-video-form-container" style="width: 100%; max-width: 520px; margin: 0 auto;">
+  <form method="POST" action="{{ url_for('admin.edit_video_inline', video_id=video.id) }}" enctype="multipart/form-data" class="space-y-6" id="edit-video-form-{{ video.id }}">
+    {{ form.hidden_tag() }}
+    <div>
+      <label for="title" class="flowbite-label">Title</label>
+      {{ form.title(class_="flowbite-input", id="title", placeholder="Title") }}
+    </div>
+    <div>
+      <label for="description" class="flowbite-label">Description</label>
+      {{ form.description(class_="flowbite-input", id="description", placeholder="Description") }}
+    </div>
+    <div>
+      <label for="video_file" class="flowbite-label">Video File</label>
+      {{ form.video_file(class_="flowbite-input", id="video_file") }}
+    </div>
+    <div>
+      <label for="thumbnail_file" class="flowbite-label">Thumbnail Image</label>
+      {{ form.thumbnail_file(class_="flowbite-input", id="thumbnail_file") }}
+      {% if video.thumbnail_url %}
+      <div style="width:180px; aspect-ratio:16/9; background:#222; border-radius:12px; overflow:hidden; margin-top:10px;">
+        <img src="{{ video.thumbnail_url }}" alt="Thumbnail" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      <label for="genres" class="flowbite-label">Genres</label>
+      {{ form.genres(class_="flowbite-input", id="genres") }}
+    </div>
+    <div>
+
+    </div>
+    <div>
+      {{ form.submit(class_="flowbite-btn") }}
+    </div>
+  </form>
+</div>
+<script>
+// AJAX submit for edit video form
+const form = document.getElementById('edit-video-form-{{ video.id }}');
+if (form) {
+  form.onsubmit = function(e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+    fetch(`/admin/videos/edit_inline/{{ video.id }}`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('admin-right-space').innerHTML = html;
+    });
+  };
+}
+</script>

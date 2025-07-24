@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}{{ content.title }}{% endblock %}
+
+{% block content %}
+<div class="video-detail">
+    <h2>{{ content.title }}</h2>
+    {% if content.processed_video_url %}
+        <div class="video-player-section">
+            <video
+                id="mainVideo"
+                class="video-js vjs-big-play-centered vjs-fluid"
+                controls
+                preload="auto"
+                width="100%"
+                height="400"
+                poster="{{ content.thumbnail_url }}"
+                data-setup='{}'>
+                <source src="{{ content.processed_video_url }}" type="video/mp4">
+
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    {% else %}
+        <p>Video is currently being processed. Please check back later.</p>
+    {% endif %}
+
+    <div class="content-info">
+        <h3>Description</h3>
+        <p>{{ content.description }}</p>
+        <p><strong>Release Date:</strong> {{ content.release_date.strftime('%Y-%m-%d') if content.release_date else 'N/A' }}</p>
+        <p><strong>Genres:</strong> {% for genre in content.genres %}{{ genre.name }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+        <p><strong>Duration:</strong> {{ content.duration_seconds // 60 }}m {{ content.duration_seconds % 60 }}s</p>
+        {% if content.is_premium %}
+            <p><span class="premium-badge">Premium Content</span></p>
+        {% endif %}
+        </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/videojs-http-source-selector@1.1.7/dist/videojs-http-source-selector.js"></script>
+<script src="https://unpkg.com/videojs-hotkeys@0.2.27/videojs.hotkeys.min.js"></script>
+<script src="https://unpkg.com/videojs-mobile-ui@0.7.2/dist/videojs-mobile-ui.min.js"></script>
+<script>
+if (window.videojsHotkeys && window.videojs) {
+    window.videojs.registerPlugin('hotkeys', window.videojsHotkeys);
+}
+document.addEventListener('DOMContentLoaded', function() {
+    var player = videojs('mainVideo', {
+        playbackRates: [0.5, 1, 1.25, 1.5, 2],
+        controlBar: {
+            pictureInPictureToggle: true
+        }
+    });
+    // Quality selector plugin
+    if (player.httpSourceSelector) {
+        player.httpSourceSelector({
+            default: 'auto'
+        });
+        player.controlBar.addChild('QualitySelector');
+    }
+    // Hotkeys plugin
+    if (typeof player.hotkeys === 'function') {
+        player.ready(function() {
+            player.hotkeys({
+                volumeStep: 0.1,
+                seekStep: 5,
+                enableModifiersForNumbers: false,
+                documentHotkeys: true
+            });
+        });
+    } else {
+        console.warn('Video.js hotkeys plugin not registered!');
+    }
+    // Mobile UI plugin (gestures)
+    if (player.mobileUi) {
+        player.mobileUi();
+    }
+    // All watch progress logic removed
+});
+</script>
+{% endblock %}
+
+<style>
+.video-detail {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.video-detail h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.video-detail video {
+    background-color: #000;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.content-info {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.content-info h3 {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.content-info p {
+    line-height: 1.6;
+    margin-bottom: 8px;
+    color: #666;
+}
+
+.premium-badge {
+    background-color: gold;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+</style>

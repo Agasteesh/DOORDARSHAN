@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ video.title }}{% endblock %}
+
+{% block content %}
+<div class="video-detail-container">
+    <div class="video-detail-info">
+        <h2 class="video-title-detail">{{ video.title }}</h2>
+        <div class="video-meta">
+            <span class="video-genre"><strong>Genres:</strong> 
+                {% for genre in video.genres %}
+                    {{ genre.name }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </span>
+            <span class="video-uploader"><strong>Uploader:</strong> {{ video.uploader.username if video.uploader else 'N/A' }}</span>
+            <span class="video-date"><strong>Upload Date:</strong> {{ video.upload_date.strftime('%Y-%m-%d') if video.upload_date else 'N/A' }}</span>
+        </div>
+        <div class="video-description">
+            <h3>Description</h3>
+            <p>{{ video.description }}</p>
+        </div>
+        {% if video.thumbnail_url %}
+        <div class="video-detail-thumb">
+            <img src="{{ video.thumbnail_url }}" alt="{{ video.title }} thumbnail" class="video-detail-thumb-img">
+        </div>
+        {% endif %}
+        {% if video.video_url %}
+        <div class="video-player-section">
+            <video
+                id="mainVideo"
+                class="video-js vjs-big-play-centered vjs-fluid"
+                controls
+                preload="auto"
+                width="100%"
+                height="400"
+                poster="{{ video.thumbnail_url }}"
+                data-setup='{}'>
+                <source src="{{ video.video_url }}" type="video/mp4">
+
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        {% else %}
+        <p class="no-video">Video is not available yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/videojs-http-source-selector@1.1.7/dist/videojs-http-source-selector.js"></script>
+<script src="https://unpkg.com/videojs-hotkeys@0.2.27/videojs.hotkeys.min.js"></script>
+<script src="https://unpkg.com/videojs-mobile-ui@0.7.2/dist/videojs-mobile-ui.min.js"></script>
+<script>
+if (window.videojsHotkeys && window.videojs) {
+    window.videojs.registerPlugin('hotkeys', window.videojsHotkeys);
+}
+document.addEventListener('DOMContentLoaded', function() {
+    var player = videojs('mainVideo', {
+        playbackRates: [0.5, 1, 1.25, 1.5, 2],
+        controlBar: {
+            pictureInPictureToggle: true
+        }
+    });
+    // Quality selector plugin
+    if (player.httpSourceSelector) {
+        player.httpSourceSelector({
+            default: 'auto'
+        });
+        player.controlBar.addChild('QualitySelector');
+    }
+    // Hotkeys plugin
+    if (typeof player.hotkeys === 'function') {
+        player.ready(function() {
+            player.hotkeys({
+                volumeStep: 0.1,
+                seekStep: 5,
+                enableModifiersForNumbers: false,
+                documentHotkeys: true
+            });
+        });
+    } else {
+        console.warn('Video.js hotkeys plugin not registered!');
+    }
+    // Mobile UI plugin (gestures)
+    if (player.mobileUi) {
+        player.mobileUi();
+    }
+});
+</script>
+{% endblock %}

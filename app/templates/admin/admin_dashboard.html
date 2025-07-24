@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% import '_macros.html' as macros %}
+{% block content %}
+<div class="admin-dashboard-wrapper" style="display: flex; min-height: 80vh;">
+  <nav class="admin-sidebar" role="banner">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Admin Panel</h2>
+    </div>
+    <div class="nav-wrap">
+      <nav class="main-nav" role="navigation">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="#" class="nav-link" onclick="showSection('users')" data-section="users">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+              </svg>
+              <span>Manage Users</span>
+              <div class="status-indicator"></div>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" onclick="showSection('videos')" data-section="videos">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+              </svg>
+              <span>Manage Videos</span>
+              <div class="status-indicator"></div>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" onclick="showSection('addvideo')" data-section="addvideo">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+              </svg>
+              <span>Add Videos</span>
+              <div class="status-indicator"></div>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </nav>
+  
+  <main class="admin-main-content" style="flex: 5; margin: 32px; display: flex;">
+    <div style="width: 100%;">
+      <div id="section-users" class="admin-section" style="display:none;">
+        <!-- User List -->
+        <div class="admin-table-container">
+          <h2 class="admin-title">
+            <span class="admin-icon">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+              </svg>
+            </span>
+            Manage Users
+          </h2>
+          <a href="#" onclick="showSection('adduser')" class="btn btn-primary">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" style="width: 10px; height: 10px; margin-right: 3px;">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+            Add New User
+          </a>
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.email }}</td>
+                  <td><span class="role-badge">{{ user.role.capitalize() }}</span></td>
+                  <td>
+                    {% if user.id != current_user.id %}
+                      <form action="{{ url_for('admin.remove_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove user {{ user.username }}?');">
+                          <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" style="width: 10px; height: 10px; margin-right: 3px;">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                          </svg>
+                          Remove
+                        </button>
+                      </form>
+                    {% else %}
+                      <span class="text-muted">Cannot remove self</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="section-adduser" class="admin-section" style="display:none;">
+        <!-- Add User Form -->
+        <div class="admin-table-container admin-form-container">
+          <h2 class="admin-title">
+            <span class="admin-icon">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+              </svg>
+            </span>
+            Add New User
+          </h2>
+          <div class="admin-form-wrapper">
+            <form method="POST" action="{{ url_for('admin.add_user') }}" class="space-y-6">
+              {{ add_user_form.hidden_tag() }}
+              <div>
+                <label for="username" class="flowbite-label">Username</label>
+                {{ add_user_form.username(class_="flowbite-input", id="username", placeholder="Username") }}
+              </div>
+              <div>
+                <label for="email" class="flowbite-label">Email</label>
+                {{ add_user_form.email(class_="flowbite-input", id="email", placeholder="Email") }}
+              </div>
+              <div>
+                <label for="password" class="flowbite-label">Password</label>
+                {{ add_user_form.password(class_="flowbite-input", id="password", placeholder="Password") }}
+              </div>
+              <div>
+                <label for="confirm_password" class="flowbite-label">Confirm Password</label>
+                {{ add_user_form.confirm_password(class_="flowbite-input", id="confirm_password", placeholder="Confirm Password") }}
+              </div>
+              <div>
+                <label for="role" class="flowbite-label">Role</label>
+                {{ add_user_form.role(class_="flowbite-input", id="role") }}
+              </div>
+              <div>
+                {{ add_user_form.submit(class_="flowbite-btn") }}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div id="section-videos" class="admin-section" style="display:none;">
+        <!-- Video List -->
+        <div class="admin-table-container">
+          <h2 class="admin-title" style="font-size: 1rem;"><span class="admin-icon">&#127916;</span> Manage Videos</h2>
+          <a href="#" onclick="showSection('addvideo')" class="btn btn-primary">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" style="width: 10px; height: 10px; margin-right: 3px;">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+            Add New Video
+          </a>
+          <div class="admin-table-wrapper">
+            <table class="admin-table" style="width: 100%; text-align: right; font-size: 0.87rem;">
+              <thead>
+                <tr>
+                  <th style="text-align: left;">ID</th>
+                  <th style="text-align: left;">Title</th>
+                  <th style="text-align: left;">Description</th>
+                  <th style="text-align: left;">Thumbnail</th>
+                  <th style="text-align: left;">Uploader</th>
+                  <th style="text-align: left;">Upload Date</th>
+                  <th style="text-align: left;">Genres</th>
+                  <th style="text-align: left;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for video in videos %}
+                  {{ macros.render_video_row(video, showEditVideoForm=True) }}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="section-addvideo" class="admin-section" style="display:none;">
+        <!-- Add Video Form -->
+        <div class="admin-table-container admin-form-container">
+          <h2 class="admin-title">
+            <span class="admin-icon">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+              </svg>
+            </span>
+            Add New Video
+          </h2>
+          <div class="admin-form-wrapper">
+            <form method="POST" action="{{ url_for('admin.add_video') }}" enctype="multipart/form-data" class="space-y-6">
+              {{ add_video_form.hidden_tag() }}
+              <div>
+                <label for="title" class="flowbite-label">Title</label>
+                {{ add_video_form.title(class_="flowbite-input", id="title", placeholder="Title") }}
+              </div>
+              <div>
+                <label for="description" class="flowbite-label">Description</label>
+                {{ add_video_form.description(class_="flowbite-input", id="description", placeholder="Description") }}
+              </div>
+              <div>
+                <label for="video_file" class="flowbite-label">Video File</label>
+                {{ add_video_form.video_file(class_="flowbite-input", id="video_file") }}
+              </div>
+              <div>
+                <label for="thumbnail_file" class="flowbite-label">Thumbnail Image</label>
+                {{ add_video_form.thumbnail_file(class_="flowbite-input", id="thumbnail_file") }}
+              </div>
+              <div>
+                <label for="genres" class="flowbite-label">Genres</label>
+                {{ add_video_form.genres(class_="flowbite-input", id="genres") }}
+              </div>
+              <div>
+                {{ add_video_form.submit(class_="flowbite-btn") }}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+    <!-- Duplicate sections removed, all content is now in the main center column -->
+  </main>
+</div>
+<script>
+
+function showSection(section) {
+  const sections = ['users', 'adduser', 'videos', 'addvideo', 'editvideo'];
+  sections.forEach(s => {
+    const element = document.getElementById('section-' + s);
+    if (element) element.style.display = 'none';
+  });
+  document.getElementById('section-' + section).style.display = 'block';
+}
+
+window.onload = function() {
+  // Check for ?section= in URL
+  const params = new URLSearchParams(window.location.search);
+  const section = params.get('section');
+  if (section && ['users','adduser','videos','addvideo'].includes(section)) {
+    showSection(section);
+  } else {
+    showSection('users');
+  }
+};
+
+function showEditVideoForm(videoId) {
+  fetch(`/admin/edit_video_inline/${videoId}`)
+    .then(response => response.text())
+    .then(html => {
+      const sections = ['users', 'adduser', 'videos', 'addvideo', 'editvideo'];
+      sections.forEach(s => {
+        const element = document.getElementById('section-' + s);
+        if (element) element.style.display = 'none';
+      });
+
+      // Create edit section if it doesn't exist
+      let editSection = document.getElementById('section-editvideo');
+      if (!editSection) {
+        editSection = document.createElement('div');
+        editSection.id = 'section-editvideo';
+        editSection.className = 'admin-section';
+        document.querySelector('.admin-main-content > div').appendChild(editSection);
+      }
+      
+      // Create wrapper divs and insert the form
+      const wrappedHtml = `
+        <div class="admin-table-container admin-form-container">
+          <h2 class="admin-title">
+            <span class="admin-icon">&#9998;</span>
+            Edit Video
+          </h2>
+          <div class="admin-form-wrapper">
+            ${html}
+          </div>
+        </div>`;
+      
+      editSection.style.display = 'block';
+      editSection.innerHTML = wrappedHtml;
+
+      // Convert form layout to grid
+      const form = editSection.querySelector('form');
+      if (form) {
+        const formContent = form.querySelector('.space-y-6') || form;
+        formContent.className = 'form-grid';
+      }
+    });
+}
+</script>
+{% endblock %}

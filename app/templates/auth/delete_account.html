@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Account{% endblock %}
+
+{% block content %}
+<div class="admin-form-container" style="max-width:420px;">
+    <h2 class="form-title">Delete Your Account</h2>
+    <p class="form-desc">Are you sure you want to delete your account? This action cannot be undone.</p>
+    <form method="POST" class="admin-form-wrapper">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.password.label }}<br>
+            {{ form.password(class_='flowbite-input') }}
+            {% for error in form.password.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.confirm_delete(class_='flowbite-input') }} {{ form.confirm_delete.label }}
+            {% for error in form.confirm_delete.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-actions">
+            {{ form.submit(class_='flowbite-btn') }}
+        </div>
+    </form>
+</div>
+{% endblock %}

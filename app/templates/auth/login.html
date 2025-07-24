@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% import '_macros.html' as macros %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="split-auth-container">
+  <div style="flex:1 1 0; min-width:0; display:flex; align-items:center; justify-content:center;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 960px; padding: 20px;">
+      {% set images = s3_thumbnails if s3_thumbnails is defined and s3_thumbnails is not none else [] %}
+      {% set images_to_display = images[:9] %}
+
+      {% for i in range(9) %}
+        <div style="aspect-ratio: 16/9; width: 100%; background: #222; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease;">
+          {% if images_to_display|length > i %}
+            <img src="{{ images_to_display[i] }}" alt="Thumbnail {{ i + 1 }}" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy">
+          {% else %}
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.9em; text-align: center;">
+              No Image
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="split-right">
+    <div class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+      <h2 class="flowbite-form-title">Log In</h2>
+      <form method="POST" class="space-y-6">
+        {{ form.hidden_tag() }}
+        <div>
+          <label for="username" class="flowbite-label">Username</label>
+          {{ form.username(class_="flowbite-input", id="username", placeholder="Email or mobile number") }}
+        </div>
+        <div>
+          <label for="password" class="flowbite-label">Password</label>
+          {{ form.password(class_="flowbite-input", id="password", placeholder="Password") }}
+        </div>
+        <div>
+          <label class="flowbite-label" style="display:flex;align-items:center;gap:0.5em;">
+            {{ form.remember_me() }}
+            <span>Remember me</span>
+          </label>
+        </div>
+        <div>
+          <button type="submit" class="flowbite-btn">Log In</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <a href="{{ url_for('auth.reset_password_request') }}" class="glass-forgot-link">Forgot password?</a>
+        </div>
+        <div>
+          <span class="glass-register-row" style="color:#b3caff;">New to Doordarshan? <a href="{{ url_for('auth.register') }}" class="glass-register-link" style="color:#fff;font-weight:800;">Sign up now.</a></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Responsive grid adjustments */
+@media (max-width: 768px) {
+  .split-auth-container > div:first-child > div {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 15px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .split-auth-container > div:first-child > div {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 10px !important;
+  }
+}
+
+/* Hover effect for image grid items */
+.split-auth-container > div:first-child > div > div:hover {
+  transform: scale(1.02);
+}
+</style>
+{% endblock %}
+
+{% block scripts %}{% endblock %}
